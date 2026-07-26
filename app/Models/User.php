@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -56,5 +57,30 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Flat list of every permission name this user has — direct + via roles.
+     * Cached per-request instance to avoid repeated queries when called
+     * multiple times (e.g. inside a resource + a middleware check).
+     *
+     * @return string[]
+     */
+    public function allPermissionNames(): array
+    {
+        return $this->getAllPermissions()->pluck('name')->values()->all();
+    }
+ 
+    /**
+     * @return string[]
+     */
+    public function roleNames(): array
+    {
+        return $this->getRoleNames()->values()->all();
     }
 }
