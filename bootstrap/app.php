@@ -9,6 +9,7 @@
  * ---------------------------------------------------------------------
  */
  
+use App\Http\Middleware\IdentifyTenant;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Register Spatie's middleware aliases (role / permission / role_or_permission)
+        $middleware->append(IdentifyTenant::class);
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

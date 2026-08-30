@@ -31,7 +31,7 @@ Route::middleware('api')->prefix('v1')->group(function () {
                 'permissions' => $request->user()->getPermissionsViaRoles()
             ];
         });
-        Route::apiResource('/posts', PostController::class);
+        
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
@@ -62,3 +62,4 @@ Route::middleware('api')->prefix('v1')->group(function () {
 
 
 });
+Route::apiResource('/posts', PostController::class);
