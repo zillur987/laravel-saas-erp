@@ -13,6 +13,8 @@ enum RoleEnum: string
 {
     case SUPER_ADMIN = 'super-admin';
     case ADMIN = 'admin';
+    case OWNER = 'owner';
+    case MEMBER= 'member';
     case MANAGER = 'manager';
     case ACCOUNTANT = 'accountant';
     case SALES_STAFF = 'sales-staff';

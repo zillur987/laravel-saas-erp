@@ -24,25 +24,32 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+
     ->withMiddleware(function (Middleware $middleware): void {
-        // Register Spatie's middleware aliases (role / permission / role_or_permission)
-        $middleware->append(IdentifyTenant::class);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\HandleInertiaRequests::class,
+            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\IdentifyTenant::class,
+        ]);
+
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
- 
+
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        // Spatie throws its own UnauthorizedException (not Laravel's) when a
-        // role/permission middleware check fails — catch it explicitly so
-        // the SPA always gets a predictable { message, error } JSON shape
-        // instead of a redirect-to-login HTML response.
-        $exceptions->render(function (UnauthorizedException $e, Request $request) {
+
+    ->withExceptions(function (Exceptions $exceptions): void {
+
+        $exceptions->render(function (
+            UnauthorizedException $e,
+            Request $request
+        ) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
                     'message' => 'You do not have permission to perform this action.',
@@ -50,16 +57,19 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 403);
             }
         });
- 
-        $exceptions->render(function (AuthorizationException $e, Request $request) {
+
+        $exceptions->render(function (
+            AuthorizationException $e,
+            Request $request
+        ) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
-                    'message' => $e->getMessage() ?: 'This action is unauthorized.',
+                    'message' => $e->getMessage()
+                        ?: 'This action is unauthorized.',
                     'error' => 'forbidden',
                 ], 403);
             }
         });
+
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    ->create();

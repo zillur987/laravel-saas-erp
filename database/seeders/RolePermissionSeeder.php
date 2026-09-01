@@ -89,5 +89,7 @@ class RolePermissionSeeder extends Seeder
 
         // Baseline role every authenticated user gets — read-only own-profile type access.
         Role::firstOrCreate(['name' => RoleEnum::EMPLOYEE->value, 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => RoleEnum::OWNER->value, 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => RoleEnum::MEMBER->value, 'guard_name' => 'web']);
     }
 }
