@@ -1,14 +1,6 @@
 <?php
 
-/**
- * ---------------------------------------------------------------------
- * SNIPPET — merge this into your existing bootstrap/app.php
- * (Laravel 11+ structure). This is NOT a standalone file to drop in;
- * it shows exactly what to add inside withExceptions() and
- * withMiddleware().
- * ---------------------------------------------------------------------
- */
- 
+use App\Http\Middleware\BindTenantFromUser;
 use App\Http\Middleware\IdentifyTenant;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
@@ -24,28 +16,26 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-
     ->withMiddleware(function (Middleware $middleware): void {
-
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-            \App\Http\Middleware\IdentifyTenant::class,
+            IdentifyTenant::class,
         ]);
 
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'tenant.from_user' => BindTenantFromUser::class,
         ]);
 
         $middleware->api(prepend: [
+            IdentifyTenant::class,
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
     })
-
     ->withExceptions(function (Exceptions $exceptions): void {
-
         $exceptions->render(function (
             UnauthorizedException $e,
             Request $request
@@ -64,12 +54,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
-                    'message' => $e->getMessage()
-                        ?: 'This action is unauthorized.',
+                    'message' => $e->getMessage() ?: 'This action is unauthorized.',
                     'error' => 'forbidden',
                 ], 403);
             }
         });
-
     })
     ->create();

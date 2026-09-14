@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\BelongsToTenant;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,26 +10,24 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles, BelongsToTenant;
 
+    protected string $guard_name = 'web';
+
     /**
-     * The attributes that are mass assignable.
-     *
      * @var list<string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'tenant_id'
+        'tenant_id',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var list<string>
      */
     protected $hidden = [
@@ -38,27 +35,28 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'password' => 'hashed',
         ];
     }
 
-    // public function getJWTIdentifier()
-    // {
-    //     return $this->getKey();
-    // }
+    public function getJWTIdentifier(): mixed
+    {
+        return $this->getKey();
+    }
 
-    // public function getJWTCustomClaims()
-    // {
-    //     return [];
-    // }
+    /**
+     * @return array<string, mixed>
+     */
+    public function getJWTCustomClaims(): array
+    {
+        return [
+            'tenant_id' => $this->tenant_id,
+        ];
+    }
 
     public function posts()
     {
@@ -66,17 +64,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Flat list of every permission name this user has — direct + via roles.
-     * Cached per-request instance to avoid repeated queries when called
-     * multiple times (e.g. inside a resource + a middleware check).
-     *
      * @return string[]
      */
     public function allPermissionNames(): array
     {
         return $this->getAllPermissions()->pluck('name')->values()->all();
     }
- 
+
     /**
      * @return string[]
      */

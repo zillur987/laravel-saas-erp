@@ -88,7 +88,7 @@ class RoleService
 
         return $permissions->groupBy(function (Permission $permission) {
             return explode('.', $permission->name)[0];
-        })->map(fn ($group) => $group->values())->toArray();
+        })->map(fn ($group) => $group->pluck('name')->values())->toArray();
     }
 
     private function guardAgainstProtectedRoleRename(Role $role, ?string $newName): void

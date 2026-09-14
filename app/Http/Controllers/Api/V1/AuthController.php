@@ -1,64 +1,94 @@
 <?php
+
 namespace App\Http\Controllers\Api\V1;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Enums\RoleEnum;
+use App\Http\Resources\UserResource;
+use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
-    // Login
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
-        if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if (! $token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized', 'message' => 'Invalid credentials.'], 401);
         }
 
         return $this->respondWithToken($token);
     }
 
-    // Register
     public function register(Request $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'company' => ['required', 'string', 'max:255'],
+            'subdomain' => ['required', 'alpha_dash', 'max:63', 'unique:tenants,subdomain'],
         ]);
 
-        $token = auth()->login($user);
+        $user = DB::transaction(function () use ($validated) {
+            $tenant = Tenant::create([
+                'name' => $validated['company'],
+                'subdomain' => $validated['subdomain'],
+                'plan' => 'free',
+            ]);
+
+            $user = User::create([
+                'tenant_id' => $tenant->id,
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+            ]);
+
+            $user->assignRole(RoleEnum::OWNER->value);
+
+            return $user;
+        });
+
+        $token = auth('api')->login($user);
+
         return $this->respondWithToken($token);
     }
 
-    // Get User Profile
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json([
+            'data' => new UserResource(auth('api')->user()),
+        ]);
     }
 
-    // Logout
     public function logout()
     {
-        auth()->logout();
+        auth('api')->logout();
+
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    // Refresh Token
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth('api')->refresh());
     }
 
-    protected function respondWithToken($token)
+    protected function respondWithToken(string $token)
     {
+        $user = auth('api')->user();
+
         return response()->json([
             'access_token' => $token,
-            'token_type'   => 'bearer',
-            'expires_in'   => auth()->factory()->getTTL() * 60
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
+            'data' => new UserResource($user),
         ]);
     }
 }

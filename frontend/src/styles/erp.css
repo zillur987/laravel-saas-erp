@@ -1,0 +1,225 @@
+.erp-shell {
+  text-align: left;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.erp-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.erp-nav__brand {
+  font-weight: 600;
+  color: var(--text-h);
+  text-decoration: none;
+  margin-right: 8px;
+}
+
+.erp-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.erp-nav a.router-link-active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.erp-nav__spacer {
+  flex: 1;
+}
+
+.erp-main {
+  padding: 24px 20px 48px;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.erp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.erp-header h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.erp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.erp-toolbar input,
+.erp-toolbar select,
+.erp-form input,
+.erp-form select,
+.erp-form textarea {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--social-bg);
+  color: var(--text-h);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn--danger {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
+
+.btn--sm {
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.erp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.erp-table th,
+.erp-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--text-h);
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.badge--warn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge--ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.alert--error {
+  color: #b91c1c;
+  margin-bottom: 12px;
+}
+
+.erp-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 20;
+}
+
+.erp-modal__card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  width: min(520px, 100%);
+  text-align: left;
+}
+
+.erp-form {
+  display: grid;
+  gap: 10px;
+}
+
+.erp-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.pos-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 16px;
+}
+
+.pos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.pos-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  background: var(--social-bg);
+  text-align: left;
+}
+
+.pos-card h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: var(--text-h);
+}
+
+.pos-cart {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.pos-cart__line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 800px) {
+  .pos-layout {
+    grid-template-columns: 1fr;
+  }
+}

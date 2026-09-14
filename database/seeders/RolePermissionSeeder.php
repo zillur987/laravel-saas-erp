@@ -47,6 +47,7 @@ class RolePermissionSeeder extends Seeder
         $manager = Role::firstOrCreate(['name' => RoleEnum::MANAGER->value, 'guard_name' => 'web']);
         $manager->syncPermissions([
             PermissionEnum::INVENTORY_VIEW->value, PermissionEnum::INVENTORY_CREATE->value, PermissionEnum::INVENTORY_UPDATE->value,
+            PermissionEnum::POS_VIEW->value, PermissionEnum::POS_SELL->value, PermissionEnum::POS_VOID->value, PermissionEnum::POS_REPORTS->value,
             PermissionEnum::SALES_VIEW->value, PermissionEnum::SALES_CREATE->value, PermissionEnum::SALES_UPDATE->value, PermissionEnum::SALES_APPROVE->value,
             PermissionEnum::PURCHASE_VIEW->value, PermissionEnum::PURCHASE_CREATE->value, PermissionEnum::PURCHASE_APPROVE->value,
             PermissionEnum::HR_VIEW->value, PermissionEnum::HR_LEAVE_APPROVE->value,
@@ -67,6 +68,7 @@ class RolePermissionSeeder extends Seeder
             PermissionEnum::SALES_VIEW->value, PermissionEnum::SALES_CREATE->value, PermissionEnum::SALES_UPDATE->value,
             PermissionEnum::CRM_VIEW->value, PermissionEnum::CRM_CREATE->value, PermissionEnum::CRM_UPDATE->value,
             PermissionEnum::INVENTORY_VIEW->value,
+            PermissionEnum::POS_VIEW->value, PermissionEnum::POS_SELL->value,
         ]);
 
         $purchaseStaff = Role::firstOrCreate(['name' => RoleEnum::PURCHASE_STAFF->value, 'guard_name' => 'web']);
@@ -79,6 +81,13 @@ class RolePermissionSeeder extends Seeder
         $inventoryStaff->syncPermissions([
             PermissionEnum::INVENTORY_VIEW->value, PermissionEnum::INVENTORY_CREATE->value,
             PermissionEnum::INVENTORY_UPDATE->value, PermissionEnum::INVENTORY_ADJUST_STOCK->value,
+            PermissionEnum::INVENTORY_EXPORT->value,
+        ]);
+
+        $posCashier = Role::firstOrCreate(['name' => RoleEnum::POS_CASHIER->value, 'guard_name' => 'web']);
+        $posCashier->syncPermissions([
+            PermissionEnum::POS_VIEW->value, PermissionEnum::POS_SELL->value, PermissionEnum::POS_VOID->value,
+            PermissionEnum::INVENTORY_VIEW->value, PermissionEnum::CRM_VIEW->value,
         ]);
 
         $hrStaff = Role::firstOrCreate(['name' => RoleEnum::HR_STAFF->value, 'guard_name' => 'web']);

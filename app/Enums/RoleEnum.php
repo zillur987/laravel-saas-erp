@@ -20,6 +20,7 @@ enum RoleEnum: string
     case SALES_STAFF = 'sales-staff';
     case PURCHASE_STAFF = 'purchase-staff';
     case INVENTORY_STAFF = 'inventory-staff';
+    case POS_CASHIER = 'pos-cashier';
     case HR_STAFF = 'hr-staff';
     case EMPLOYEE = 'employee';
 

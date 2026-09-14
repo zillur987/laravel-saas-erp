@@ -1,10 +1,19 @@
 import axios from 'axios'
 
-/**
- * Central axios instance. Sanctum SPA auth relies on cookies, so
- * withCredentials must be true and CSRF cookie must be fetched once
- * before the first stateful request (see auth.store.js -> initCsrf()).
- */
+const TOKEN_KEY = 'erp_token'
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY)
+}
+
+export function setToken(token) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token)
+  } else {
+    localStorage.removeItem(TOKEN_KEY)
+  }
+}
+
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api/v1',
   withCredentials: true,
@@ -14,15 +23,21 @@ const http = axios.create({
   },
 })
 
-// Central 401/403 handling. Individual requests can still catch locally
-// for form-specific error messages — this only handles the "kick user
-// back to login" / "show forbidden toast" global behaviour.
+http.interceptors.request.use((config) => {
+  const token = getToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 http.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status
 
     if (status === 401) {
+      setToken(null)
       window.dispatchEvent(new CustomEvent('auth:unauthenticated'))
     }
 

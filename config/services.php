@@ -28,6 +28,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'sslcommerz' => [
+        'store_id' => env('SSLCOMMERZ_STORE_ID'),
+        'store_password' => env('SSLCOMMERZ_STORE_PASSWORD'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

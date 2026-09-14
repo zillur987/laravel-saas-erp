@@ -33,6 +33,12 @@ enum PermissionEnum: string
     case INVENTORY_DELETE = 'inventory.delete';
     case INVENTORY_ADJUST_STOCK = 'inventory.adjust_stock';
     case INVENTORY_EXPORT = 'inventory.export';
+
+    // Point of Sale
+    case POS_VIEW = 'pos.view';
+    case POS_SELL = 'pos.sell';
+    case POS_VOID = 'pos.void';
+    case POS_REPORTS = 'pos.reports';
  
     // Sales
     case SALES_VIEW = 'sales.view';
